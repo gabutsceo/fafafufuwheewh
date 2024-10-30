@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi Script Amazon_action.py</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f3;
+        }
+
+        header {
+            background: #4A90E2; /* Soft blue */
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        section {
+            margin: 20px;
+            background: white;
+            border-radius: 8px; /* Slightly rounded corners */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Softer shadow */
+        }
+
+        .section-header {
+            padding: 15px;
+            cursor: pointer;
+            background: #4A90E2;
+            color: #ffffff;
+            border-radius: 8px 8px 0 0; /* Rounded corners for the header */
+        }
+
+        .section-content {
+            padding: 20px;
+            display: none; /* Hidden by default */
+        }
+
+        h1, h2, h3 {
+            color: #333333; /* Darker text for better contrast */
+        }
+
+        pre {
+            background: #f9f9f9; /* Light grey background */
+            padding: 10px;
+            border-left: 5px solid #4A90E2; /* Matching the header color */
+            overflow-x: auto;
+            border-radius: 5px; /* Slightly rounded corners */
+        }
+
+        .note {
+            background: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px; /* Slightly rounded corners */
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #4A90E2; /* Matching the header color */
+            color: #ffffff;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            section {
+                margin: 10px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            h2 {
+                font-size: 1.2em;
+            }
+        }
+
+        @media (min-width: 600px) {
+            .container {
+                display: flex;
+                flex-direction: column;
+                max-width: 800px;
+                margin: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Dokumentasi Script Amazon_action.py</h1>
+</header>
+
+<section>
+    <div class="section-header" onclick="toggleSection(this)">Deskripsi</div>
+    <div class="section-content">
+        <p>Script ini digunakan untuk memvalidasi nomor telepon (dalam format internasional) dan alamat email. Script ini menggunakan multithreading untuk mempercepat proses validasi dengan memeriksa beberapa entri secara bersamaan.</p>
+    </div>
+</section>
+
+<section>
+    <div class="section-header" onclick="toggleSection(this)">Panduan Penggunaan</div>
+    <div class="section-content">
+        <ol>
+            <li>Pastikan Anda memiliki Python terinstal di sistem Anda.</li>
+            <li>Siapkan file input yang berisi nomor telepon atau alamat email, satu per baris.</li>
+            <li>Simpan script ini sebagai <code>Amazon_action.py</code>.</li>
+            <li>Jalankan script melalui terminal atau command prompt dengan perintah:</li>
+            <pre><code>python Amazon_action.py nama_file_input.txt</code></pre>
+        </ol>
+    </div>
+</section>
+
+<section>
+    <div class="section-header" onclick="toggleSection(this)">Struktur Script</div>
+    <div class="section-content">
+        <h3>1. Kelas INDEx</h3>
+        <p>Kelas ini mencetak pesan yang menunjukkan bahwa script telah dimulai.</p>
+        <pre><code>class INDEx:
+    def __new__(self):
+        print(yellow + \"\"\" 
+        Script Started - 
+            script by @ta9ra9pa9 
+            modified by @iampopg 
+            contact https://t.me/iampopg 
+        \"\"\")
+        </code></pre>
+
+        <h3>2. Fungsi fun_action(num)</h3>
+        <p>Fungsi ini bertujuan untuk memproses setiap nomor telepon atau alamat email yang diberikan. Fungsi ini akan memvalidasi format dan mencatat hasilnya ke dalam file jika nomor atau email tersebut valid.</p>
+        <pre><code>def fun_action(num):
+    num = num.strip()
+    
+    # Memastikan nomor memiliki format yang benar
+    if num.isnumeric() and "+" not in num:
+        num = "+%s" % num  # Menambahkan prefix '+' jika belum ada
+    elif "@" in num:
+        pass  # Asumsi format email valid; tidak perlu tindakan
+    else:
+        print(yellow + f"[?] Unknown Format ==> {num}")
+        return  # Keluar dari fungsi jika format tidak dikenal
+
+    while True:
+        try:
+            # Memanggil fungsi check untuk memvalidasi
+            A, Error = Amazon(num).check()
+
+            if A:
+                with open("Valid.txt", "a") as ff:
+                    ff.write("%s\n" % num)  # Menyimpan nomor yang valid ke file
+                print(green + f"[+] Valid ==> {num}")
+                break  # Keluar dari loop jika valid
+
+            else:
+                print(red + f"[-] Invalid ==> {num}")
+                break  # Keluar dari loop jika tidak valid
+
+        except Exception as e:
+            print(yellow + f"[?] Unknown Error ==> {num}")
+            break  # Menangani kesalahan dan keluar dari loop
+</code></pre>
+
+        <h3>3. Fungsi main(input_file)</h3>
+        <p>Fungsi ini membaca file input dan menerapkan fungsi <code>fun_action</code> untuk setiap entri menggunakan thread pool.</p>
+        <pre><code>def main(input_file):
+    for _ in range(1):  # Menjalankan proses satu kali
+        try:
+            email = open(input_file, "r", encoding="Latin-1").read().splitlines()  # Membaca file dan memisahkan setiap baris
+            ThreadPool = Pool(3)  # Membuat thread pool dengan 3 worker
+            ThreadPool.map(fun_action, email)  # Menerapkan fungsi fun_action pada setiap entri
+        except Exception as e:
+            print(e)  # Menangani kesalahan yang mungkin terjadi
+</code></pre>
+    </div>
+</section>
+
+<section>
+    <div class="section-header" onclick="toggleSection(this)">Penanganan Kesalahan</div>
+    <div class="section-content">
+        <p>Script ini menangani kesalahan umum seperti format yang tidak dikenali dan kesalahan saat melakukan validasi. Pesan kesalahan akan dicetak untuk membantu pengguna mengidentifikasi masalah. Jika terjadi kesalahan, fungsi akan mengeluarkan pesan yang sesuai dengan kesalahan yang ditemukan, sehingga pengguna dapat dengan mudah memperbaiki input mereka.</p>
+    </div>
+</section>
+
+<section>
+    <div class="section-header" onclick="toggleSection(this)">Catatan</div>
+    <div class="section-content">
+        <div class="note">
+            <p><strong>Perhatian:</strong> Pastikan kelas <code>Amazon</code> dan metode <code>check()</code> telah terdefinisi dengan benar untuk melakukan validasi yang akurat. Script ini bergantung pada implementasi tersebut untuk berfungsi dengan baik.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="section-header" onclick="toggleSection(this)">Referensi</div>
+    <div class="section-content">
+        <p>Untuk informasi lebih lanjut mengenai Python dan multithreading, Anda dapat merujuk ke dokumentasi resmi Python:</p>
+        <ul>
+            <li><a href="https://docs.python.org/3/tutorial/index.html" target="_blank">Tutorial Python</a></li>
+            <li><a href="https://docs.python.org/3/library/threading.html" target="_blank">Modul Threading</a></li>
+        </ul>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2024 Dokumentasi Script. Semua hak dilindungi.</p>
+</footer>
+
+<script>
+    function toggleSection(header) {
+        const content = header.nextElementSibling;
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
